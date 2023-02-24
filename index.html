@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8/">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="shortcut icon" href="./title.jpeg">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <title>Bíblia Mensagem da Cruz</title>
+</head>
+
+<body>
+    <form>
+        <div class="row g-3" style="margin: 10px;">
+            <div class="col-sm-2">
+              <input type="text" id="book" class="form-control" placeholder="Livro" aria-label="City">
+            </div>
+            <div class="col-sm-2">
+              <input type="text" id="chapter" class="form-control" placeholder="Capítulo" aria-label="State">
+            </div>
+            <div class="col-sm-2">
+              <input type="text" id="verse" class="form-control" placeholder="Versículo" aria-label="Zip">
+            </div>
+            <div class="col-sm-2">
+                <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="searchVerse()">Pesquisar</button>
+              </div>
+        </div>
+    </form>
+    
+    <div id="janelaModal" class="modal fade">
+        <div class="modal-dialog modal-fullscreen">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <span id="titleModal" class="modal-title"></span>
+                </div>
+
+                <div class="modal-body">
+                    <p id="result" name="result"></p>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" onclick="aumentarFonte()">A+</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="DiminuirFonte()">A-</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
+                    <button type="button" class="btn btn-primary" id="back" onclick="backVerse()">Anterior</button>
+                    <button type="button" class="btn btn-primary" id="next" onclick="nextVerse()">Próximo</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</body>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+    let currentBook, currentChapter, currentVerse;
+
+    function searchVerse() {
+        const book = $("#book").val();
+        const chapter = $("#chapter").val();
+        const verse = $("#verse").val();
+
+        if (!book || !chapter || !verse) {
+            alert("Por favor, preencha todos os campos Livro, Capítulo e Versículo");
+            return;
+        } else {
+            getVerses(book, chapter, verse)
+                .then(function (data) {
+                    if (data.text) {
+                        console.log("Request 200 Ok");
+                        $('#janelaModal').modal('show');
+                        console.log("Abrindo modal OK");
+                    }
+                })
+                .catch(function (error) {
+                    $("#back").prop("disabled", true);
+                    alert("Não foram encontrados versículos para os parâmetros informados " + error);
+                });
+        }
+    }
+
+    function getVerses(book, chapter, verse) {
+        return new Promise(function (resolve, reject) {
+            const url = `https://bible-api.com/${book}+${chapter}:${verse}?translation=almeida`;
+            $.getJSON(url)
+                .done(function (data) {
+                    if (data.text) {
+                        currentBook = data.verses[0].book_name;
+                        currentChapter = data.verses[0].chapter;
+                        currentVerse = data.verses[0].verse;
+
+                        document.getElementById("titleModal").innerHTML = `${currentBook} ${currentChapter}:${currentVerse}`;
+                        document.getElementById("result").innerHTML = `${"<b>"}${currentVerse} - ${data.text}${"</b>"}`;
+
+                        $("#next").prop("disabled", false);
+                        $("#back").prop("disabled", false);
+                        resolve(data);
+                    }
+                })
+                .fail(function (jqXHR, textStatus, errorThrown) {
+                    if (jqXHR.status == 404) {
+                        console.log("Não foram encontrados versículos para os parâmetros informados")
+                        reject(errorThrown);
+                    }
+                });
+        });
+    }
+
+    function nextVerse() {
+        if (!currentBook || !currentChapter || !currentVerse) {
+            alert("Por favor, pesquise um versículo primeiro.");
+            return;
+        }
+
+        let nextVerse = Number(currentVerse) + 1;
+        $("#verse").val(nextVerse);
+
+        getVerses(currentBook, currentChapter, nextVerse)
+            .then(function (data) {
+                if (data.text) {
+                    console.log("Request 200 Ok");
+                }
+            })
+            .catch(function (error) {
+                $("#next").prop("disabled", true);
+                $("#verse").val(currentVerse);
+                console.log("Ocorreu um erro ao buscar o próximo versículo: " + error);
+            });
+    }
+
+    function backVerse() {
+        if (!currentBook || !currentChapter || !currentVerse) {
+            alert("Por favor, pesquise um versículo primeiro.");
+            return;
+        }
+
+        let backVerse = Number(currentVerse) - 1;
+        $("#verse").val(backVerse);
+
+        getVerses(currentBook, currentChapter, backVerse)
+            .then(function (data) {
+                if (data.text) {
+                    console.log("Request 200 Ok");
+                }
+            })
+            .catch(function (error) {
+                $("#back").prop("disabled", true);
+                $("#verse").val(currentVerse);
+                console.log("Ocorreu um erro ao buscar o versículo aterior: " + error);
+            });
+    }
+
+    function aumentarFonte() {
+        var meuTexto = document.getElementById("result");
+        var tamanhoFonte = window.getComputedStyle(result, null).getPropertyValue("font-size");
+        var novoTamanhoFonte = parseFloat(tamanhoFonte) + 5;
+        meuTexto.style.fontSize = novoTamanhoFonte + "px";
+    }
+
+    function DiminuirFonte() {
+        var meuTexto = document.getElementById("result");
+        var tamanhoFonte = window.getComputedStyle(result, null).getPropertyValue("font-size");
+        var novoTamanhoFonte = parseFloat(tamanhoFonte) - 5;
+        meuTexto.style.fontSize = novoTamanhoFonte + "px";
+    }
+
+</script>
+
+</html>

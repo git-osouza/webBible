@@ -1,0 +1,32 @@
+body {
+    padding: 10;
+    margin: 10;
+    background-image: url('');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+}
+
+p{
+    padding-top: 110px;
+    margin: 10px;
+    text-align: center;
+    margin-left: 90px; 
+    margin-right: 90px;
+    font-size: 50px;
+    font-family: UI-SANS-SERIF;
+}
+
+
+form{
+    padding-top: 20%;
+    margin-left: 30%;
+}
+
+span{
+    padding-top: 5;
+    font-size: 80px;
+    font-family: UI-SANS-SERIF;
+    margin-left: 45%;
+}
