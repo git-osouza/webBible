@@ -5,14 +5,14 @@
     <meta charset="UTF-8/">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="./css/style.css">
     <link rel="shortcut icon" href="./title.jpeg">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>Bíblia Mensagem da Cruz</title>
 </head>
 
 <body>
-    <nav class="navbar navbar-light bg-light">
+    <nav class="navbar navbar">
         <div class="container-fluid">
             <form>
                 <div class="row g-3" style="margin: auto;">
@@ -27,14 +27,13 @@
                     </div>
                     <div class="col">
                         <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="searchVerse()">Visualizar</button>
-                        <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="limpar()">Limpar</button>
+                        <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="limparFiltros()">Limpar</button>
                     </div>
                 </div>
             </form>
         </div>
     </nav>
    
-    
     <div id="janelaModal" class="modal fade">
         <div class="modal-dialog modal-fullscreen">
 
@@ -44,13 +43,15 @@
                     <span id="titleModal" class="modal-title"></span>
                 </div>
 
-                <div class="modal-body">
+                <div class="modal-body" id="bodyResult">
                     <p id="result" name="result"></p>
                 </div>
 
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" onclick="aumentarFonte()">A+</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="diminuirFonte()">A-</button>
+                    <button type="button" class="btn btn-outline-secondary" id="black" onclick="trocarFundo('white', 'black')">p</button>
+                    <button type="button" class="btn btn-outline-secondary" id="white" onclick="trocarFundo('black', 'white')">b</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('increase')">A+</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('decrease')">A-</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                     <button type="button" class="btn btn-primary" id="back" onclick="backVerse()">Anterior</button>
                     <button type="button" class="btn btn-primary" id="next" onclick="nextVerse()">Próximo</button>
@@ -64,6 +65,8 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script>
+    document.addEventListener('keydown', fecharModalEsc);
+
     let currentBook, currentChapter, currentVerse;
 
     function searchVerse() {
@@ -165,41 +168,32 @@
             });
     }
 
-    function aumentarFonte() {
-        var meuTexto = document.getElementById("result");
+    function alterarTamanhoFonte(changeType) {
+        var text = document.getElementById("result");
         var tamanhoFonte = window.getComputedStyle(result, null).getPropertyValue("font-size");
-        var novoTamanhoFonte = parseFloat(tamanhoFonte) + 5;
-        meuTexto.style.fontSize = novoTamanhoFonte + "px";
+        var novoTamanhoFonte = 0;
+        changeType === 'increase' ? novoTamanhoFonte = parseFloat(tamanhoFonte) + 5 : novoTamanhoFonte = parseFloat(tamanhoFonte) - 5;
+        text.style.fontSize = novoTamanhoFonte + "px";
     }
 
-    function diminuirFonte() {
-        var meuTexto = document.getElementById("result");
-        var tamanhoFonte = window.getComputedStyle(result, null).getPropertyValue("font-size");
-        var novoTamanhoFonte = parseFloat(tamanhoFonte) - 5;
-        meuTexto.style.fontSize = novoTamanhoFonte + "px";
-    }
-
-    function limpar(){
+    function limparFiltros(){
         $("#book").val("");
         $("#chapter").val("");
         $("#verse").val("");
     }
 
-    function getLyrics(artist, title) {
-    $.ajax({
-        url: "https://api.lyrics.ovh/v1/" + artist + "/" + title,
-        method: "GET"
-    }).done(function (response) {
-        if (response.lyrics === "") {
-            alert("No lyrics found");
-        } else {
-            $("#lyrics").text(response.lyrics);
-        }
-    }).fail(function () {
-        alert("Failed to retrieve lyrics");
-    });
-}
+    function trocarFundo(color, bgColor) {
+        var meuTexto = document.getElementById("bodyResult");
+        meuTexto.style.backgroundColor = bgColor;
+        meuTexto.style.color = color;
+        console.log("Fundo alterado OK");
+    }
 
+    function fecharModalEsc(event){
+        if (event.key === 'Escape') {
+            $('#janelaModal').modal('hide');
+        }
+    }
 
 </script>
 
