@@ -1,7 +1,7 @@
 body {
     padding: 10;
     margin: 10;
-    background-image: url('');
+    background-image: url('/imagemLogoPrincipal.png');
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -9,7 +9,7 @@ body {
 }
 
 p{
-    padding-top: 110px;
+    padding-top: 80px;
     margin: 10px;
     text-align: center;
     margin-left: 90px; 
@@ -18,15 +18,17 @@ p{
     font-family: UI-SANS-SERIF;
 }
 
+span{
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: auto;
+    text-align: center;
+    font-size: 60px;
+    font-family: UI-SANS-SERIF;
+}
 
 form{
-    padding-top: 20%;
-    margin-left: 30%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
-span{
-    padding-top: 5;
-    font-size: 80px;
-    font-family: UI-SANS-SERIF;
-    margin-left: 45%;
-}

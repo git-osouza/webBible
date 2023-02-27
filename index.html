@@ -12,22 +12,28 @@
 </head>
 
 <body>
-    <form>
-        <div class="row g-3" style="margin: 10px;">
-            <div class="col-sm-2">
-              <input type="text" id="book" class="form-control" placeholder="Livro" aria-label="City">
-            </div>
-            <div class="col-sm-2">
-              <input type="text" id="chapter" class="form-control" placeholder="Capítulo" aria-label="State">
-            </div>
-            <div class="col-sm-2">
-              <input type="text" id="verse" class="form-control" placeholder="Versículo" aria-label="Zip">
-            </div>
-            <div class="col-sm-2">
-                <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="searchVerse()">Pesquisar</button>
-              </div>
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <form>
+                <div class="row g-3" style="margin: auto;">
+                    <div class="col">
+                      <input type="text" id="book" class="form-control" placeholder="Livro" aria-label="City">
+                    </div>
+                    <div class="col">
+                      <input type="text" id="chapter" class="form-control" placeholder="Capítulo" aria-label="State">
+                    </div>
+                    <div class="col">
+                      <input type="text" id="verse" class="form-control" placeholder="Versículo" aria-label="Zip">
+                    </div>
+                    <div class="col">
+                        <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="searchVerse()">Visualizar</button>
+                        <button type="button" id="search" class="btn btn-primary" data-bs-toggle="modal" onclick="limpar()">Limpar</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </nav>
+   
     
     <div id="janelaModal" class="modal fade">
         <div class="modal-dialog modal-fullscreen">
@@ -44,7 +50,7 @@
 
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" onclick="aumentarFonte()">A+</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="DiminuirFonte()">A-</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="diminuirFonte()">A-</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                     <button type="button" class="btn btn-primary" id="back" onclick="backVerse()">Anterior</button>
                     <button type="button" class="btn btn-primary" id="next" onclick="nextVerse()">Próximo</button>
@@ -61,12 +67,16 @@
     let currentBook, currentChapter, currentVerse;
 
     function searchVerse() {
-        const book = $("#book").val();
-        const chapter = $("#chapter").val();
-        const verse = $("#verse").val();
+        let book = $("#book").val();
+        let chapter = $("#chapter").val();
+        let verse = $("#verse").val();
 
-        if (!book || !chapter || !verse) {
-            alert("Por favor, preencha todos os campos Livro, Capítulo e Versículo");
+        if(verse === ''){
+            verse = '1';
+        }
+
+        if (!book || !chapter) {
+            alert("Por favor, preencha os os campos Livro e Capítulo!");
             return;
         } else {
             getVerses(book, chapter, verse)
@@ -94,7 +104,7 @@
                         currentChapter = data.verses[0].chapter;
                         currentVerse = data.verses[0].verse;
 
-                        document.getElementById("titleModal").innerHTML = `${currentBook} ${currentChapter}:${currentVerse}`;
+                        document.getElementById("titleModal").innerHTML = `${"<b>"}${currentBook} ${currentChapter}:${currentVerse}${"</b>"}`;
                         document.getElementById("result").innerHTML = `${"<b>"}${currentVerse} - ${data.text}${"</b>"}`;
 
                         $("#next").prop("disabled", false);
@@ -162,12 +172,34 @@
         meuTexto.style.fontSize = novoTamanhoFonte + "px";
     }
 
-    function DiminuirFonte() {
+    function diminuirFonte() {
         var meuTexto = document.getElementById("result");
         var tamanhoFonte = window.getComputedStyle(result, null).getPropertyValue("font-size");
         var novoTamanhoFonte = parseFloat(tamanhoFonte) - 5;
         meuTexto.style.fontSize = novoTamanhoFonte + "px";
     }
+
+    function limpar(){
+        $("#book").val("");
+        $("#chapter").val("");
+        $("#verse").val("");
+    }
+
+    function getLyrics(artist, title) {
+    $.ajax({
+        url: "https://api.lyrics.ovh/v1/" + artist + "/" + title,
+        method: "GET"
+    }).done(function (response) {
+        if (response.lyrics === "") {
+            alert("No lyrics found");
+        } else {
+            $("#lyrics").text(response.lyrics);
+        }
+    }).fail(function () {
+        alert("Failed to retrieve lyrics");
+    });
+}
+
 
 </script>
 
