@@ -13,45 +13,47 @@
 </head>
 
 <body>
-    <nav class="navbar bg-body-tertiary">
-        <div class="container-fluid" style="margin-top: 450px;">
-            <form class="d-flex" role="search">
-                <input id="book" class="form-control me-2" type="search" placeholder="Livro" aria-label="Search" autofocus>
-                <input id="chapter" class="form-control me-2" type="search" placeholder="Capítulo" aria-label="Search">
-                <input id="verse" class="form-control me-2" type="search" placeholder="Versículo" aria-label="Search">
-                <button id="btn" class="btn btn-primary" type="button" onclick="searchVerse()">Visualizar</button>
-                <button id="btn" class="btn btn-primary" type="button" onclick="limparFiltros()">Limpar</button>
-                <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/ministerio.png')">Pix</button>
-                <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/imagemLogoPrincipal.png')">Logo</button>
-            </form>
+    <div id="modalForm" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="margin-top: 19%;">
+                <div class="modal-header"></div>
+                <div class="modal-body" id="bodyResult">
+                    <form class="d-flex" role="search">
+                        <input id="book" class="form-control me-2" type="search" placeholder="Livro" aria-label="Search" autofocus>
+                        <input id="chapter" class="form-control me-2" type="search" placeholder="Capítulo" aria-label="Search">
+                        <input id="verse" class="form-control me-2" type="search" placeholder="Versículo" aria-label="Search">
+                    </form>
+                </form>
+                </div>
+                <div class="modal-footer">
+                    <div class="container" style="padding-left: 67px;">
+                        <button id="btn" class="btn btn-primary" type="submit" onclick="searchVerse()">Visualizar</button>
+                        <button id="btn" class="btn btn-primary" type="button" onclick="limparFiltros()">Limpar</button>
+                        <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/ministerio.png')">Pix</button>
+                        <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/imagemLogoPrincipal.png')">Logo</button>
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
+    </div>
 
     <div id="janelaModal" class="modal fade">
         <div class="modal-dialog modal-fullscreen">
-
             <div class="modal-content">
-
                 <div class="modal-header">
                     <span id="titleModal" class="modal-title"></span>
                 </div>
-
                 <div class="modal-body" id="bodyResult">
                     <p id="result" name="result"></p>
                 </div>
-
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" id="black" onclick="trocarFundo('white', 'black')">p</button>
-                    <button type="button" class="btn btn-outline-secondary" id="white" onclick="trocarFundo('black', 'white')">b</button>
                     <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('decrease')">A-</button>
                     <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('increase')">A+</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                     <button type="button" class="btn btn-primary" id="back" onclick="backVerse()">Anterior</button>
                     <button type="button" class="btn btn-primary" id="next" onclick="nextVerse()">Próximo</button>
                 </div>
-
             </div>
-
         </div>
     </div>
 </body>
@@ -63,6 +65,11 @@
     document.addEventListener('keydown', fecharModalEsc);
 
     let currentBook, currentChapter, currentVerse;
+
+    const inputChapter = document.getElementById('chapter');
+    const inputVerse = document.getElementById('verse');
+    
+    abrirModal();
 
     function searchVerse() {
         let book = $("#book").val();
@@ -187,6 +194,7 @@
     function fecharModalEsc(event) {
         if (event.key === 'Escape') {
             $('#janelaModal').modal('hide');
+            setTimeout(abrirModal, 1000);
         }
     }
 
@@ -211,6 +219,35 @@
             }
         });
     }
+
+    function abrirModal(){
+        $(document).ready(function() {
+            $('#modalForm').modal('show');
+        });
+    }
+
+    inputVerse.addEventListener('keyup', function(event) {
+        if (event.keyCode === 13) {
+            searchVerse();
+        }
+    });
+
+    inputChapter.addEventListener('keyup', function(event) {
+        if (event.keyCode === 13) {
+            searchVerse();
+        }
+    });
+
+    document.addEventListener("keydown", function(event) {
+        if (event.keyCode === 37) {
+            // Botão de voltar pressionado
+            backVerse();
+        }
+        else if (event.keyCode === 39) {
+            // Botão de avançar pressionado
+            nextVerse();
+        }
+    });
 
 </script>
 
