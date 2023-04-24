@@ -19,18 +19,24 @@
                 <div class="modal-header"></div>
                 <div class="modal-body" id="bodyResult">
                     <form class="d-flex" role="search">
-                        <input id="book" class="form-control me-2" type="search" placeholder="Livro" aria-label="Search" autofocus>
-                        <input id="chapter" class="form-control me-2" type="search" placeholder="Capítulo" aria-label="Search">
-                        <input id="verse" class="form-control me-2" type="search" placeholder="Versículo" aria-label="Search">
+                        <input id="book" class="form-control me-2" type="search" placeholder="Livro" aria-label="Search"
+                            autofocus>
+                        <input id="chapter" class="form-control me-2" type="search" placeholder="Capítulo"
+                            aria-label="Search">
+                        <input id="verse" class="form-control me-2" type="search" placeholder="Versículo"
+                            aria-label="Search">
                     </form>
-                </form>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <div class="container" style="padding-left: 67px;">
-                        <button id="btn" class="btn btn-primary" type="submit" onclick="searchVerse()">Visualizar</button>
+                        <button id="btn" class="btn btn-primary" type="submit"
+                            onclick="searchVerse()">Visualizar</button>
                         <button id="btn" class="btn btn-primary" type="button" onclick="limparFiltros()">Limpar</button>
-                        <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/ministerio.png')">Pix</button>
-                        <button id="btn" class="btn btn-primary" type="button" onclick="abrirFullscreen('/img/imagemLogoPrincipal.png')">Logo</button>
+                        <button id="btn" class="btn btn-primary" type="button"
+                            onclick="abrirFullscreen('/img/ministerio.png')">Pix</button>
+                        <button id="btn" class="btn btn-primary" type="button"
+                            onclick="abrirFullscreen('/img/imagemLogoPrincipal.png')">Logo</button>
                     </div>
                 </div>
             </div>
@@ -47,8 +53,10 @@
                     <p id="result" name="result"></p>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('decrease')">A-</button>
-                    <button type="button" class="btn btn-outline-secondary" onclick="alterarTamanhoFonte('increase')">A+</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                        onclick="alterarTamanhoFonte('decrease')">A-</button>
+                    <button type="button" class="btn btn-outline-secondary"
+                        onclick="alterarTamanhoFonte('increase')">A+</button>
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fechar</button>
                     <button type="button" class="btn btn-primary" id="back" onclick="backVerse()">Anterior</button>
                     <button type="button" class="btn btn-primary" id="next" onclick="nextVerse()">Próximo</button>
@@ -68,8 +76,9 @@
 
     const inputChapter = document.getElementById('chapter');
     const inputVerse = document.getElementById('verse');
-    
+
     abrirModal();
+    showContentOnScreen('teste das telas de exibicao');
 
     function searchVerse() {
         let book = $("#book").val();
@@ -220,25 +229,25 @@
         });
     }
 
-    function abrirModal(){
-        $(document).ready(function() {
+    function abrirModal() {
+        $(document).ready(function () {
             $('#modalForm').modal('show');
         });
     }
 
-    inputVerse.addEventListener('keyup', function(event) {
+    inputVerse.addEventListener('keyup', function (event) {
         if (event.keyCode === 13) {
             searchVerse();
         }
     });
 
-    inputChapter.addEventListener('keyup', function(event) {
+    inputChapter.addEventListener('keyup', function (event) {
         if (event.keyCode === 13) {
             searchVerse();
         }
     });
 
-    document.addEventListener("keydown", function(event) {
+    document.addEventListener("keydown", function (event) {
         if (event.keyCode === 37) {
             // Botão de voltar pressionado
             backVerse();
@@ -249,6 +258,42 @@
         }
     });
 
+    async function showContentOnScreen(content) {
+        // Obtém as telas disponíveis
+        const screens = await navigator.mediaDevices.enumerateDevices();
+
+        // Cria uma lista de opções para cada tela disponível
+        const options = screens.map((screen, index) => {
+            return `<option value="${index}">Tela ${index + 1}</option>`;
+        });
+
+        // Cria um elemento select com as opções das telas
+        const select = document.createElement("select");
+        select.innerHTML = options.join("");
+
+        // Cria um botão para confirmar a seleção da tela
+        const button = document.createElement("button");
+        button.innerText = "Exibir em tela selecionada";
+        button.addEventListener("click", () => {
+            const selectedScreenIndex = select.value;
+            const selectedScreen = screens[selectedScreenIndex];
+            const x = selectedScreen.left;
+            const y = selectedScreen.top;
+            const width = selectedScreen.width;
+            const height = selectedScreen.height;
+            const features = `left=${x},top=${y},width=${width},height=${height}`;
+            window.open("", "", features).document.write(content);
+        });
+
+        // Cria um elemento div para conter o select e o botão
+        const container = document.createElement("div");
+        container.appendChild(select);
+        container.appendChild(button);
+
+        // Adiciona o select e o botão à div desejada
+        const modalBody = document.getElementById("bodyResult");
+        modalBody.appendChild(container);
+    }
 </script>
 
 </html>
